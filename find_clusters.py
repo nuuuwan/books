@@ -79,7 +79,7 @@ def get_dewey4_to_rows():
     n = len(book_list)
     dewey_to_n = {}
     for d in book_list:
-        dewey = d['dewey'][:4]
+        dewey = d['dewey'][:2]
         dewey_to_n[dewey] = dewey_to_n.get(dewey, 0) + 1
 
     books_per_row = n / N_SHELF_ROWS
