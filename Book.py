@@ -6,7 +6,7 @@ def normalize_dewey(raw_dewey):
     raw_dewey = raw_dewey.replace("/", "").strip()
     try:
         dewey_f = 1000 * (float)(raw_dewey)
-        return '%03d%03d' % (dewey_f)
+        return '%03d.%03d' % (dewey_f / 1000, dewey_f % 1000)
     except ValueError:
         return UNKNOWN_DEWEY
 
