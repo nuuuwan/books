@@ -6,7 +6,7 @@ from _constants import BOOK_DATA_FILE
 from _utils import log
 from Book import Book
 from book_shelf import get_shelf_row
-from ddc import get_dewey2_description
+from ddc import get_dewey_description
 
 
 class BookList:
@@ -52,7 +52,7 @@ class BookList:
             log.info(f'Adding {len(books)} books to {shelf_row}')
             lines.append('-' * 32)
             lines.append(f'SHELF {shelf_row[0]}, ROW {shelf_row[-1]}')
-            lines.append(get_dewey2_description(books))
+            lines.append(get_dewey_description(books))
             lines.append('-' * 32)
             books = sorted(books, key=lambda book: book.sort_key)
             for book in books:
