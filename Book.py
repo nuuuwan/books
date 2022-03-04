@@ -13,7 +13,7 @@ def normalize_dewey(raw_dewey):
 
 class Book:
     def __init__(self, dewey, author, title, isbn):
-        self.__dewey__ = format_dewey(dewey)
+        self.__dewey__ = normalize_dewey(dewey)
         self.__author__ = author
         self.__title__ = title
         self.__isbn__ = isbn
