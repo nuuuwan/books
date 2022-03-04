@@ -19,7 +19,7 @@ def get_dewey_description(books):
     dewey_index = get_dewey_index()
     dewey_set = set()
     for book in books:
-        dewey_set.update([book.dewey_n(1),book.dewey_n(2)])
+        dewey_set.update([book.dewey_n(1), book.dewey_n(2)])
     return '\n'.join(map(
         lambda dewey2: dewey2 + ' ' + dewey_index[dewey2],
         sorted(dewey_set),
