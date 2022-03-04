@@ -1,4 +1,3 @@
-import sys
 from textwrap import wrap
 from fuzzywuzzy import fuzz
 
@@ -11,6 +10,7 @@ from book_shelf import get_shelf_row
 from ddc import get_dewey_description
 
 MIN_SIMILARITY = 80
+
 
 class BookList:
     def __init__(self):
@@ -88,6 +88,7 @@ class BookList:
                 if MIN_SIMILARITY <= similarity:
                     similar_author_pairs.append([author1, author2])
         return similar_author_pairs
+
 
 if __name__ == '__main__':
     book_list = BookList()

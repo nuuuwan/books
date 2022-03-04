@@ -2,6 +2,7 @@ from utils import logx
 
 log = logx.get_logger('books')
 
+
 def get_count(iter, func_get_keys):
     key_to_count = {}
     for item in iter:

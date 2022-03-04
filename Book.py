@@ -20,7 +20,6 @@ class Book:
         self.title = title
         self.isbn = isbn
 
-
     @property
     def author_in_ref_order_list(self):
         author_in_ref_order_list = []
@@ -33,8 +32,8 @@ class Book:
 
     @property
     def authors_in_ref_order(self):
-        return DELIM_AUTHOR_LIST_WITH_SPACES.join(self.author_in_ref_order_list)
-    
+        return DELIM_AUTHOR_LIST_WITH_SPACES.join(
+            self.author_in_ref_order_list)
 
     @property
     def sort_key(self):

@@ -3,6 +3,7 @@ from utils import tsv
 DDC_FILE = 'ddc.csv'
 N_DESCRIPTION = 2
 
+
 def get_ddc_data_list():
     return tsv.read(DDC_FILE, delimiter=',')
 
