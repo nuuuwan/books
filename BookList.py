@@ -8,7 +8,7 @@ from _constants import BOOK_DATA_FILE
 from _utils import get_count
 from Book import Book
 from book_shelf import get_shelf_row
-from ddc import depth_dewey, get_dewey_description
+from ddc import get_dewey_description
 from oclc import search_by_isbn
 
 MIN_SIMILARITY = 80
@@ -93,51 +93,29 @@ class BookList:
 
     def analyze(self, start, display_limit=5):
         i_display = 0
+        n = len(self)
         for i_book, book in enumerate(self.book_list[start:]):
-            if book.isbn in [
-                '9780262690232',
-                '9780198601739',
-                '9780099535768',
-                '9781610395694',
-                '9780571525959',
-                '9780486229195',
-                '9780761964810',
-                '9789679920093',
-            ]:
-                continue
-
             isbn = book.isbn
+            if isbn in ['9780761964810']: continue
             summary_list = search_by_isbn(isbn)
 
             if summary_list:
-                all_dewey_list = []
-                for summary in summary_list:
-                    all_dewey_list += summary['dewey_list']
-
-                has_bigger_dewey = False
-                for dewey in all_dewey_list:
-                    if depth_dewey(dewey) > depth_dewey(book.dewey):
-                        has_bigger_dewey = True
+                summary_title = summary_list[0].get('Title', '')
+                title_similarity = fuzz.ratio(
+                    book.title.lower(),
+                    summary_title.lower(),
+                )
+                if title_similarity < 70:
+                    print('-' * 32)
+                    print(i_display+ 1, ')', i_book + start + 1, 'of', n)
+                    print(isbn)
+                    print(book)
+                    print('title_similarity = ', title_similarity)
+                    print('\t - ', book.title)
+                    print('\t + ', summary_title)
+                    i_display += 1
+                    if i_display >= display_limit:
                         break
-                if not has_bigger_dewey:
-                    continue
-
-                print('-' * 32)
-                print('#', i_book + start + 1)
-                print(isbn)
-                print(book)
-                print(all_dewey_list)
-                for summary in summary_list:
-                    print(
-                        summary['Total Holdings:'],
-                        summary['dewey_list'],
-                        '"' + summary.get('Title', '') + '"',
-                        '(' + summary.get('Author', '') + ')',
-                    )
-                    print('...')
-                i_display += 1
-                if i_display >= display_limit:
-                    break
 
 
 if __name__ == '__main__':
