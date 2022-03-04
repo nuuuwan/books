@@ -6,6 +6,7 @@ from _constants import BOOK_DATA_FILE
 from Book import Book
 from ddc import get_dewey2_description
 
+
 class BookList:
     def __init__(self):
         self.__book_list__ = list(map(
