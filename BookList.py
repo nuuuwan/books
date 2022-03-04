@@ -1,13 +1,15 @@
+import sys
 from textwrap import wrap
 
 from fuzzywuzzy import fuzz
 from utils import filex, tsv
 
 from _constants import BOOK_DATA_FILE
-from _utils import get_count, log
+from _utils import get_count
 from Book import Book
 from book_shelf import get_shelf_row
-from ddc import get_dewey_description
+from ddc import depth_dewey, get_dewey_description
+from oclc import search_by_isbn
 
 MIN_SIMILARITY = 80
 
@@ -52,7 +54,7 @@ class BookList:
         sorted_shelf_row_and_books = sorted(
             shelf_row_to_books.items(), key=lambda x: x[0])
         for shelf_row, books in sorted_shelf_row_and_books:
-            log.info(f'Adding {len(books)} books to {shelf_row}')
+            print(f'Adding {len(books)} books to {shelf_row}')
             lines.append('-' * 32)
             lines.append(f'SHELF {shelf_row[0]}, ROW {shelf_row[-1]}')
             lines.append(get_dewey_description(books))
@@ -89,13 +91,56 @@ class BookList:
                     similar_author_pairs.append([author1, author2])
         return similar_author_pairs
 
+    def analyze(self, start, display_limit=5):
+        i_display = 0
+        for i_book, book in enumerate(self.book_list[start:]):
+            if book.isbn in [
+                '9780262690232',
+                '9780198601739',
+                '9780099535768',
+                '9781610395694',
+                '9780571525959',
+                '9780486229195',
+                '9780761964810',
+                '9789679920093',
+            ]:
+                continue
+
+            isbn = book.isbn
+            summary_list = search_by_isbn(isbn)
+
+            if summary_list:
+                all_dewey_list = []
+                for summary in summary_list:
+                    all_dewey_list += summary['dewey_list']
+
+                has_bigger_dewey = False
+                for dewey in all_dewey_list:
+                    if depth_dewey(dewey) > depth_dewey(book.dewey):
+                        has_bigger_dewey = True
+                        break
+                if not has_bigger_dewey:
+                    continue
+
+                print('-' * 32)
+                print('#', i_book + start + 1)
+                print(isbn)
+                print(book)
+                print(all_dewey_list)
+                for summary in summary_list:
+                    print(
+                        summary['Total Holdings:'],
+                        summary['dewey_list'],
+                        '"' + summary.get('Title', '') + '"',
+                        '(' + summary.get('Author', '') + ')',
+                    )
+                    print('...')
+                i_display += 1
+                if i_display >= display_limit:
+                    break
+
 
 if __name__ == '__main__':
+    start = (int)(sys.argv[1])
     book_list = BookList()
-    sorted_author_and_count = sorted(
-        book_list.get_author_to_count().items(),
-        key=lambda item: (-item[1], item[0]),
-    )
-    for author, count in sorted_author_and_count:
-        if 5 < count:
-            print(count, '\t', author)
+    book_list.analyze(start=start)

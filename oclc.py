@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from utils import www
 
 from _utils import log
-from books.Book import UNKNOWN_DEWEY, Book
+from books.Book import normalize_dewey
 
-MAX_BOOKS_TO_SEARCH = 1
+MAX_BOOKS_TO_SEARCH = 3
 DELIM_AUTHOR_LIST = ';'
 
 
@@ -27,7 +27,6 @@ def get_url_for_isbn(isbn):
 
 
 def parse_page(isbn, url):
-    log.debug(f'Searching {url}...')
     html = www.read(url)
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -43,17 +42,18 @@ def parse_page(isbn, url):
 
     # ddc
     table = soup.find('table', {'id': 'classSummaryData'})
-    if table.find('thead').find('tr').find('th').text[:3] == 'DDC':
-        most_common_dewey = table.find('tbody').find(
-            'tr').find_all('td')[1].text
-        summary['most_common_dewey'] = most_common_dewey
+    dewey_list = []
+    for tr in table.find('tbody').find_all('tr'):
+        th_list = tr.find_all('th')
+        if th_list:
+            if 'DDC' not in th_list[0]:
+                break
+        td_list = tr.find_all('td')
+        if td_list:
+            dewey_list.append(normalize_dewey(td_list[1].text))
 
-    return Book(
-        title=summary['Title'],
-        author_list=parse_oclc_author(summary['Author']),
-        dewey=summary.get('most_common_dewey', UNKNOWN_DEWEY),
-        isbn=isbn,
-    )
+    summary['dewey_list'] = list(set(dewey_list))
+    return summary
 
 
 def parse_index(isbn):
@@ -61,6 +61,9 @@ def parse_index(isbn):
     html = www.read(url)
     soup = BeautifulSoup(html, 'html.parser')
     table_results = soup.find('table', {'id': 'results-table'})
+    if not table_results:
+        return []
+
     url_list = []
     for tr in table_results.find('tbody').find_all('tr'):
         first_td = tr.find('td')
@@ -74,13 +77,13 @@ def parse_index(isbn):
 
 def search_by_isbn(isbn):
     url_list = parse_index(isbn)
-    book_list = []
+    summary_list = []
     for url in url_list[:MAX_BOOKS_TO_SEARCH]:
-        book_list.append(parse_page(isbn, url))
-    return book_list
+        summary_list.append(parse_page(isbn, url))
+    return summary_list
 
 
 if __name__ == '__main__':
     isbn = sys.argv[1]
-    for book in search_by_isbn(isbn):
-        log.info(book)
+    for summary in search_by_isbn(isbn):
+        log.info(summary)

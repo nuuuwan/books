@@ -14,8 +14,8 @@ def parse_clz_author(author):
 def normalize_dewey(raw_dewey):
     raw_dewey = raw_dewey.replace("/", "").strip()
     try:
-        dewey_f = 1000 * (float)(raw_dewey)
-        return '%03d.%03d' % (dewey_f / 1000, dewey_f % 1000)
+        dewey_f = 10000 * (float)(raw_dewey)
+        return '%03d.%04d' % (dewey_f / 10000, dewey_f % 10000)
     except ValueError:
         return UNKNOWN_DEWEY
 

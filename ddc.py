@@ -4,6 +4,13 @@ DDC_FILE = 'ddc.csv'
 N_DESCRIPTION = 2
 
 
+def depth_dewey(dewey):
+    if 'X' in dewey:
+        return 0
+    dewey_int_str = '%07d' % (int)((float)(dewey) * 10000)
+    return len(dewey_int_str.rstrip('0'))
+
+
 def get_ddc_data_list():
     return tsv.read(DDC_FILE, delimiter=',')
 
