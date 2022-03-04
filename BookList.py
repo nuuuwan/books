@@ -1,10 +1,10 @@
 from textwrap import wrap
-from fuzzywuzzy import fuzz
 
+from fuzzywuzzy import fuzz
 from utils import filex, tsv
 
 from _constants import BOOK_DATA_FILE
-from _utils import log, get_count
+from _utils import get_count, log
 from Book import Book
 from book_shelf import get_shelf_row
 from ddc import get_dewey_description
