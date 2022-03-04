@@ -25,6 +25,7 @@ def get_dewey_description(books):
             dewey_to_count[dewey] = dewey_to_count.get(dewey, 0) + 1
 
     return '\n'.join(map(
-        lambda item: item[0] + ' ' + dewey_index[item[0]] + ' (' + str(item[1]) + ')',
+        lambda item: item[0] + ' ' + dewey_index[item[0]]
+        + ' (' + str(item[1]) + ')',
         sorted(dewey_to_count.items(), key=lambda item: item[0]),
     ))
