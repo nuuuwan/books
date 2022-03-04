@@ -1,5 +1,8 @@
 from _constants import UNKNOWN_DEWEY
 
+DELIM_AUTHOR_LIST = '|'
+DELIM_AUTHOR_LIST_WITH_SPACES = ' | '
+
 
 def normalize_dewey(raw_dewey):
     raw_dewey = raw_dewey.replace("/", "").strip()
@@ -11,22 +14,33 @@ def normalize_dewey(raw_dewey):
 
 
 class Book:
-    def __init__(self, dewey, author, title, isbn):
+    def __init__(self, dewey, author_list, title, isbn):
         self.dewey = normalize_dewey(dewey)
-        self.author = author
+        self.author_list = author_list
         self.title = title
         self.isbn = isbn
 
+
     @property
-    def author_in_ref_order(self):
-        *first_names, last_name = self.author.split(' ')
-        return last_name.upper() + ', ' + ' '.join(first_names)
+    def author_in_ref_order_list(self):
+        author_in_ref_order_list = []
+        for author in self.author_list:
+            *first_names, last_name = author.split(' ')
+            author_in_ref_order = (
+                last_name.upper() + ', ' + ' '.join(first_names))
+            author_in_ref_order_list.append(author_in_ref_order)
+        return author_in_ref_order_list
+
+    @property
+    def authors_in_ref_order(self):
+        return DELIM_AUTHOR_LIST_WITH_SPACES.join(self.author_in_ref_order_list)
+    
 
     @property
     def sort_key(self):
         return (
             self.dewey +
-            self.author_in_ref_order +
+            self.authors_in_ref_order +
             self.title)
 
     @property
@@ -40,10 +54,13 @@ class Book:
     def buildFromCLZDatum(d):
         return Book(
             d['Dewey'],
-            d['Author'],
+            list(map(
+                lambda author: author.strip(),
+                d['Author'].split(DELIM_AUTHOR_LIST),
+            )),
             d['Title'],
             d['ISBN'],
         )
 
     def __str__(self):
-        return f'{self.dewey} [{self.author_in_ref_order}] {self.title}'
+        return f'{self.dewey} [{self.authors_in_ref_order}] {self.title}'
