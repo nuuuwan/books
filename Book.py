@@ -18,9 +18,6 @@ class Book:
         self.title = title
         self.isbn = isbn
 
-    def dewey_n(self, n):
-        return self.dewey[:n]
-
     @property
     def author_in_ref_order(self):
         *first_names, last_name = self.author.split(' ')
@@ -44,8 +41,11 @@ class Book:
             self.title)
 
     @property
-    def dewey_norm(self):
-        return f'{self.dewey[:3]}.{self.dewey[3:]}'
+    def dewey_int_str(self):
+        return self.dewey[:3] + self.dewey[4:]
+
+    def dewey_n(self, n):
+        return self.dewey_int_str[:n]
 
     @staticmethod
     def buildFromCLZDatum(d):
