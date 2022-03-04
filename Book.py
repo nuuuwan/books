@@ -13,21 +13,13 @@ def normalize_dewey(raw_dewey):
 
 class Book:
     def __init__(self, dewey, author, title, isbn):
-        self.__dewey__ = normalize_dewey(dewey)
-        self.__author__ = author
-        self.__title__ = title
-        self.__isbn__ = isbn
-
-    @property
-    def dewey(self):
-        return self.__dewey__
+        self.dewey = normalize_dewey(dewey)
+        self.author = author
+        self.title = title
+        self.isbn = isbn
 
     def dewey_n(self, n):
         return self.dewey[:n]
-
-    @property
-    def author(self):
-        return self.__author__
 
     @property
     def author_in_ref_order(self):
@@ -42,14 +34,6 @@ class Book:
                 return shelf_row
 
         return UNKNOWN_SHELF_ROW
-
-    @property
-    def title(self):
-        return self.__title__
-
-    @property
-    def isbn(self):
-        return self.__isbn__
 
     @property
     def sort_key(self):
