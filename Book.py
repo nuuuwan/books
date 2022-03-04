@@ -2,11 +2,11 @@ from _constants import UNKNOWN_DEWEY, UNKNOWN_SHELF_ROW
 from DEWEY_TO_SHELF_ROW import DEWEY_TO_SHELF_ROW
 
 
-def format_dewey(raw_dewey):
+def normalize_dewey(raw_dewey):
     raw_dewey = raw_dewey.replace("/", "").strip()
     try:
         dewey_f = 1000 * (float)(raw_dewey)
-        return '%03d%03d' % (dewey_f / 1000, dewey_f % 1000)
+        return '%03d%03d' % (dewey_f)
     except ValueError:
         return UNKNOWN_DEWEY
 
