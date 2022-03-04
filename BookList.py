@@ -1,13 +1,16 @@
+import sys
 from textwrap import wrap
+from fuzzywuzzy import fuzz
 
 from utils import filex, tsv
 
 from _constants import BOOK_DATA_FILE
-from _utils import log
+from _utils import log, get_count
 from Book import Book
 from book_shelf import get_shelf_row
 from ddc import get_dewey_description
 
+MIN_SIMILARITY = 80
 
 class BookList:
     def __init__(self):
@@ -69,7 +72,29 @@ class BookList:
         filex.write(file_name, self.get_shelf_layout())
         print(f'Wrote {file_name}')
 
+    def get_author_to_count(self):
+        return get_count(self, lambda book: book.author_in_ref_order_list)
+
+    def get_similar_author_pairs(self):
+        author_to_count = book_list.get_author_to_count()
+        author_list = sorted(list(author_to_count.keys()))
+        n = len(author_list)
+        similar_author_pairs = []
+        for i1 in range(0, n - 1):
+            author1 = author_list[i1]
+            for i2 in range(i1 + 1, n):
+                author2 = author_list[i2]
+                similarity = fuzz.ratio(author1, author2)
+                if MIN_SIMILARITY <= similarity:
+                    similar_author_pairs.append([author1, author2])
+        return similar_author_pairs
 
 if __name__ == '__main__':
     book_list = BookList()
-    book_list.store_shelf_layout('/tmp/books.shelf_layout.txt')
+    sorted_author_and_count = sorted(
+        book_list.get_author_to_count().items(),
+        key=lambda item: (-item[1], item[0]),
+    )
+    for author, count in sorted_author_and_count:
+        if 5 < count:
+            print(count, '\t', author)
