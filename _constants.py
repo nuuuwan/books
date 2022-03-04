@@ -1,8 +1,9 @@
 import os
 
+LATEST_DATE_ID = '20220304'
 BOOK_DATA_FILE = os.path.join(
     '/Users/nuwan.senaratna/Dropbox/_BOOKS',
-    'NUWANS_BOOKS.clz.20220303.csv',
+    f'NUWANS_BOOKS.clz.{LATEST_DATE_ID}.csv',
 )
 
 
