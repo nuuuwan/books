@@ -1,5 +1,4 @@
-from _constants import UNKNOWN_DEWEY, UNKNOWN_SHELF_ROW
-from DEWEY_TO_SHELF_ROW import DEWEY_TO_SHELF_ROW
+from _constants import UNKNOWN_DEWEY
 
 
 def normalize_dewey(raw_dewey):
@@ -24,18 +23,8 @@ class Book:
         return last_name.upper() + ', ' + ' '.join(first_names)
 
     @property
-    def shelf_row(self):
-        for dewey_n, shelf_row in DEWEY_TO_SHELF_ROW.items():
-            n = len(dewey_n)
-            if dewey_n == self.dewey_n(n):
-                return shelf_row
-
-        return UNKNOWN_SHELF_ROW
-
-    @property
     def sort_key(self):
         return (
-            self.shelf_row +
             self.dewey +
             self.author_in_ref_order +
             self.title)
@@ -57,4 +46,4 @@ class Book:
         )
 
     def __str__(self):
-        return f'{self.dewey_norm} [{self.author_in_ref_order}] {self.title}'
+        return f'{self.dewey} [{self.author_in_ref_order}] {self.title}'

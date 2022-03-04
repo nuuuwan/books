@@ -3,7 +3,9 @@ from textwrap import wrap
 from utils import filex, tsv
 
 from _constants import BOOK_DATA_FILE
+from _utils import log
 from Book import Book
+from book_shelf import get_shelf_row
 from ddc import get_dewey2_description
 
 
@@ -34,7 +36,7 @@ class BookList:
     def get_shelf_row_to_books(self):
         shelf_row_to_books = {}
         for book in self:
-            shelf_row = book.shelf_row
+            shelf_row = get_shelf_row(book)
             if shelf_row not in shelf_row_to_books:
                 shelf_row_to_books[shelf_row] = []
             shelf_row_to_books[shelf_row].append(book)
@@ -47,6 +49,7 @@ class BookList:
         sorted_shelf_row_and_books = sorted(
             shelf_row_to_books.items(), key=lambda x: x[0])
         for shelf_row, books in sorted_shelf_row_and_books:
+            log.info(f'Adding {len(books)} books to {shelf_row}')
             lines.append('-' * 32)
             lines.append(f'SHELF {shelf_row[0]}, ROW {shelf_row[-1]}')
             lines.append(get_dewey2_description(books))
